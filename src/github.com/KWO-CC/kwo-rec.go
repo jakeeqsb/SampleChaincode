@@ -30,16 +30,17 @@ func (t *KilloWattRecords) createRecord(stub shim.ChaincodeStubInterface, args [
 	}
 
 	searchKey := args[0]
-
+	var newRecord RecordModel
 	recordByte, err := stub.GetState(searchKey)
 
 	if err != nil || recordByte != nil {
 		return shim.Error("[ERROR] RecordID has already existed")
 	}
-	newRecordAsBytes, err := json.Marshal(args[1])
+	json.Unmarshal([]byte(args[1]), &newRecord)
+	newRecordAsBytes, err := json.Marshal(newRecord)
 
 	stub.PutState(searchKey, newRecordAsBytes)
-	logger.Infof("A new User added with Key: %s, Data: %s", searchKey, string(newRecordAsBytes))
+	logger.Infof("A new Record added with Key: %s, Data: %s", searchKey, string(newRecordAsBytes))
 	return shim.Success(nil)
 }
 
